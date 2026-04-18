@@ -72,7 +72,7 @@ stateDiagram-v2
     in_progress --> done : работа выполнена успешно
     in_progress --> fail : агент завершился с ошибкой
 
-    note right of new : при старте субагента этап в new; исполнение задачи — после перевода в in-progress
+    note right of new : при старте субагента этап в new, исполнение задачи после перевода в in-progress
     note right of done : оркестратор выбирает следующий шаг по FSM
     note right of fail : оркестратор анализирует всю историю executions
 ```
