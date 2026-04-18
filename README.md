@@ -63,9 +63,9 @@ stateDiagram-v2
     in_progress --> done : работа выполнена успешно
     in_progress --> fail : агент завершился с ошибкой
 
-    note right of new : субагент не выполняет\nсодержательную работу
-    note right of done : оркестратор выбирает\nследующий шаг по FSM
-    note right of fail : оркестратор анализирует\nвсю историю executions
+    note right of new : субагент не выполняет содержательную работу
+    note right of done : оркестратор выбирает следующий шаг по FSM
+    note right of fail : оркестратор анализирует всю историю executions
 ```
 
 ## Запуск оркестратора (точка входа)
