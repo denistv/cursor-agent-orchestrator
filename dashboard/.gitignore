@@ -1,0 +1,62 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+build
+out
+
+# Environment (keep examples if you add them)
+.env
+.env.*
+!.env.example
+!.env*.example
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+bun-debug.log*
+
+# Caches & tooling
+.cache
+.parcel-cache
+.turbo
+.vite
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+
+# Test & coverage
+coverage
+.nyc_output
+*.lcov
+playwright-report
+test-results
+
+# Deploy / host previews
+.vercel
+.netlify
+
+# Storybook
+storybook-static
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db

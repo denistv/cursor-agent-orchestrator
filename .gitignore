@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Editor / IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Local env (если появятся скрипты в корне)
+.env
+.env.*
+!.env.example
+
+# Временные файлы
+*.tmp
+*.temp
+.cache/
