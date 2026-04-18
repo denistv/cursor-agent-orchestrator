@@ -21,7 +21,7 @@ interface BoardTask {
 interface RawExecution {
   id?: number
   parent_execution_id?: number | null
-  /** Текущий формат в `task-protocol.md`. */
+  /** Текущий формат в `orchestrator-protocol.md`. */
   agent_type?: string
   /** Устаревшее имя поля; читается только для обратной совместимости. */
   state?: string

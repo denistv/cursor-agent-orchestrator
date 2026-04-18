@@ -2,7 +2,7 @@
 
 Доска активных задач Cursor Agent Orchestrator. Оркестратор читает этот файл для выбора следующей задачи.
 
-Формат описан в [task-protocol.md](task-protocol.md).
+Формат описан в [orchestrator-protocol.md](orchestrator-protocol.md).
 
 ---
 

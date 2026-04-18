@@ -27,7 +27,7 @@ description: >-
 
 - `memory/TaskBoard.md` — доска задач
 - `memory/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
-- `task-protocol.md` — форматы данных (прочитай при необходимости)
+- `orchestrator-protocol.md` — форматы данных (прочитай при необходимости)
 
 ## Входные данные
 
@@ -58,7 +58,7 @@ description: >-
 3. Заполни `started_at` у текущего execution
 4. Сохрани `memory/TASK_MEMORY_{hex}.yml`
 
-**Дальше** разрешена содержательная работа по задаче (`task-protocol.md`).
+**Дальше** разрешена содержательная работа по задаче (`orchestrator-protocol.md`).
 
 ### Шаг 4. Прочитать входные данные
 
@@ -114,7 +114,7 @@ description: >-
 В корне `memory/TASK_MEMORY_{hex}.yml` **нет** поля `state` у задачи. Не добавляй его.
 
 1. Убедись, что текущий execution переведён в `status: done` (или `fail`) с заполненными полями.
-2. Следующий execution с `agent_type: architect` и обновление `State` на `memory/TaskBoard.md` выполняет **оркестратор** (`task-protocol.md`).
+2. Следующий execution с `agent_type: architect` и обновление `State` на `memory/TaskBoard.md` выполняет **оркестратор** (`orchestrator-protocol.md`).
 
 ## Критерий готовности
 

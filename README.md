@@ -13,7 +13,7 @@
 
 Оркестратор ведёт задачи по конечному автомату (FSM), создаёт execution’ы с типом агента и запускает соответствующих субагентов.
 
-Протокол данных, сущности `Task` / `Execution` и правила маршрутизации описаны в [`task-protocol.md`](task-protocol.md). Поведение ролей зафиксировано в skills в каталоге [`.cursor/skills/`](.cursor/skills/).
+Протокол данных, сущности `Task` / `Execution` и правила маршрутизации описаны в [`orchestrator-protocol.md`](orchestrator-protocol.md). Поведение ролей зафиксировано в skills в каталоге [`.cursor/skills/`](.cursor/skills/).
 
 ## Архитектура: каждый скилл — отдельный субагент
 
@@ -111,7 +111,7 @@ npm run dev
 
 | Путь | Назначение |
 | --- | --- |
-| `task-protocol.md` | Форматы данных и правила для агентов |
+| `orchestrator-protocol.md` | Форматы данных и правила для агентов |
 | `.cursor/skills/` | Инструкции для оркестратора и субагентов |
 | `memory/` | Доска и YAML-память: `memory/TaskBoard.md`, `memory/TASK_MEMORY_<hex>.yml` |
 | `dashboard/` | UI + сервер live-обновлений для мониторинга |

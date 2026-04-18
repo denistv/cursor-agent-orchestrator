@@ -17,7 +17,7 @@ description: >-
 
 - `memory/TaskBoard.md` — доска задач
 - `memory/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
-- `task-protocol.md` — форматы данных
+- `orchestrator-protocol.md` — форматы данных
 - `docs/{task_id}/` — выходная директория для документов
 
 ## Входные данные
@@ -49,7 +49,7 @@ description: >-
 - заполни `started_at` у execution
 - сохрани `memory/TASK_MEMORY_{hex}.yml`
 
-**Дальше** разрешена содержательная работа по задаче (`task-protocol.md`).
+**Дальше** разрешена содержательная работа по задаче (`orchestrator-protocol.md`).
 
 ### Шаг 4. Прочитать контекст
 
@@ -219,7 +219,7 @@ git show --stat HEAD
 В корне `memory/TASK_MEMORY_{hex}.yml` **нет** поля `state` у задачи.
 
 1. Убедись, что текущий execution переведён в `status: done` с заполненным `finished_at` у execution.
-2. Поля `finished_at` у **задачи** и строка `State: done` на `memory/TaskBoard.md` выставляет **оркестратор** после успешного завершения этого execution (`task-protocol.md`).
+2. Поля `finished_at` у **задачи** и строка `State: done` на `memory/TaskBoard.md` выставляет **оркестратор** после успешного завершения этого execution (`orchestrator-protocol.md`).
 
 ## Критерий готовности
 

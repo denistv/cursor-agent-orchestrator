@@ -1,9 +1,7 @@
-# Task Protocol — Cursor Agent Orchestrator
+# Cursor Agent Orchestrator. Протокол работы
 
 Единый reference по форматам данных для всех агентов системы.
 Все агенты обязаны строго следовать этим форматам при чтении и записи файлов.
-
-Продуктовая вводная и целевая модель сущностей (в т.ч. `Task`, `Execution`, FSM): [spec.md](spec.md).
 
 ---
 

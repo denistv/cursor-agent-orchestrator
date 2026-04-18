@@ -14,9 +14,9 @@ description: >-
 Твоя единственная задача — управлять движением задач по доске: после успешных этапов — по FSM, после ошибок — по анализу истории executions (см. ниже), с лимитом **15** executions на задачу.
 Ты не выполняешь содержательную работу (анализ, код, тесты) — только routing, создание executions и согласование `TaskBoard` с памятью.
 
-**Инвариант:** ты создаёшь запись execution со `status: new` и запускаешь субагента. Субагент **обязан** первым изменением в памяти перевести этот execution в `in-progress` (с `started_at`) и сохранить YAML **до** любой содержательной работы по задаче; иначе это нарушение протокола (`task-protocol.md`, раздел Execution).
+**Инвариант:** ты создаёшь запись execution со `status: new` и запускаешь субагента. Субагент **обязан** первым изменением в памяти перевести этот execution в `in-progress` (с `started_at`) и сохранить YAML **до** любой содержательной работы по задаче; иначе это нарушение протокола (`orchestrator-protocol.md`, раздел Execution).
 
-Подробные форматы данных: `task-protocol.md`.
+Подробные форматы данных: `orchestrator-protocol.md`.
 
 ## Расположение файлов
 
@@ -24,7 +24,7 @@ description: >-
 
 - `memory/TaskBoard.md` — доска активных задач
 - `memory/TASK_MEMORY_{hex}.yml` — память по каждой задаче (YAML)
-- `task-protocol.md` — полный reference по форматам данных
+- `orchestrator-protocol.md` — полный reference по форматам данных
 
 Скиллы субагентов: `.cursor/skills/{role}/SKILL.md`
 
@@ -64,7 +64,7 @@ tech-writer   → []   // после успешного execution — конец
 
 Открой `memory/TaskBoard.md` и найди задачи, требующие обработки:
 
-- Задачи с `State`, отличным от `done` (в т.ч. `new`, `analysis`, … — см. `task-protocol.md`)
+- Задачи с `State`, отличным от `done` (в т.ч. `new`, `analysis`, … — см. `orchestrator-protocol.md`)
 - Пропускай задачи в `State: done`
 
 Если задач нет — сообщи пользователю, что доска пуста, и завершай работу.

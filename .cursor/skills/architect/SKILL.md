@@ -27,7 +27,7 @@ description: >-
 
 - `memory/TaskBoard.md` — доска задач
 - `memory/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
-- `task-protocol.md` — форматы данных (прочитай при необходимости)
+- `orchestrator-protocol.md` — форматы данных (прочитай при необходимости)
 
 ## Входные данные
 
@@ -58,7 +58,7 @@ description: >-
 - заполни `started_at` у execution
 - сохрани `memory/TASK_MEMORY_{hex}.yml`
 
-**Дальше** разрешена содержательная работа по задаче (`task-protocol.md`).
+**Дальше** разрешена содержательная работа по задаче (`orchestrator-protocol.md`).
 
 ### Шаг 4. Прочитать контекст (входные данные)
 
