@@ -61,7 +61,7 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Dev Studio</p>
+          <p className="eyebrow">Cursor Agent Orchestrator</p>
           <h1>Live Dashboard</h1>
           <p className="topbar-subtitle">
             Следит за `memory/TaskBoard.md` и `memory/TASK_MEMORY_*.yml`, показывает текущий flow и результат

@@ -11,7 +11,7 @@ const repoRoot = resolve(__dirname, '..', '..')
 
 /**
  * Каталог состояния: `TaskBoard.md` и `TASK_MEMORY_*.yml` лежат в `memory/` в корне репозитория.
- * Переопределение: `DASHBOARD_DATA_DIR` или `DEV_STUDIO_DATA_DIR` — абсолютный путь к каталогу,
+ * Переопределение: `DASHBOARD_DATA_DIR` или устаревший алиас `DEV_STUDIO_DATA_DIR` — абсолютный путь к каталогу,
  * где лежат эти файлы (часто `<repo>/memory`).
  */
 function resolveStateDirectory(): string {
@@ -111,7 +111,7 @@ watcher.on('change', scheduleBroadcastUpdate)
 watcher.on('unlink', scheduleBroadcastUpdate)
 
 httpServer.listen(port, () => {
-  process.stdout.write(`Dev Studio dashboard server is listening on http://localhost:${port}\n`)
+  process.stdout.write(`Cursor Agent Orchestrator dashboard server is listening on http://localhost:${port}\n`)
   process.stdout.write(`State directory (memory/TaskBoard.md, memory/TASK_MEMORY_*.yml): ${stateDir}\n`)
 })
 
