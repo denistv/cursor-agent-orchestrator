@@ -64,7 +64,7 @@ function App() {
           <p className="eyebrow">Dev Studio</p>
           <h1>Live Dashboard</h1>
           <p className="topbar-subtitle">
-            Следит за `TaskBoard.md` и `TASK_MEMORY_*.yml`, показывает текущий flow и результат
+            Следит за `memory/TaskBoard.md` и `memory/TASK_MEMORY_*.yml`, показывает текущий flow и результат
             каждого execution.
           </p>
         </div>
@@ -86,7 +86,7 @@ function App() {
           {isLoading ? (
             <section className="panel empty-state">
               <h2>Загрузка</h2>
-              <p>Читаю `TaskBoard.md` и `TASK_MEMORY_*.yml`…</p>
+              <p>Читаю `memory/TaskBoard.md` и `memory/TASK_MEMORY_*.yml`…</p>
             </section>
           ) : error ? (
             <section className="panel empty-state">
@@ -96,7 +96,7 @@ function App() {
           ) : !selectedTask ? (
             <section className="panel empty-state">
               <h2>Задачи не найдены</h2>
-              <p>Добавьте запись в `TaskBoard.md`, чтобы dashboard начал её отслеживать.</p>
+              <p>Добавьте запись в `memory/TaskBoard.md`, чтобы dashboard начал её отслеживать.</p>
             </section>
           ) : (
             <>

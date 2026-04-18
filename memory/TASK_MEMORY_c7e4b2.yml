@@ -38,7 +38,7 @@ executions:
 
       ## Контекст для архитектора
 
-      - Вход: `ai/dev-studio/dashboard/src/App.tsx` — добавить состояние вида (`live` | `room`) и ветвление контента `main` после выбора задачи; пустые/ошибочные состояния согласовать с Room (не рендерить устаревшую сцену).
+      - Вход: `dashboard/src/App.tsx` — добавить состояние вида (`live` | `room`) и ветвление контента `main` после выбора задачи; пустые/ошибочные состояния согласовать с Room (не рендерить устаревшую сцену).
       - Вынести сцену в компонент, напр. `dashboard/src/components/RoomView.tsx` (или `AgentRoom.tsx`); стили — `App.css` или локальный CSS-модуль.
       - Чистая функция от `(task: TaskRecord | null, ...)` → для каждого `AgentType` зона `lounge` | `desk` + опциональный бейдж статуса; ядро: `getCurrentExecution` + проверка `status === 'in-progress'`.
       - Цвета ролей согласовать с существующими чипами в `App.css` (`.exec-agent-*`).
@@ -174,18 +174,18 @@ executions:
     finished_at: "2026-04-16T22:52:00.000Z"
     output_data: |
       ## Реализованные файлы
-      - `ai/dev-studio/dashboard/src/room/placement.ts` — типы `RoomZone`, `AgentRoomPlacement`, `AgentPlacementsMap` и `computeAgentPlacements` по алгоритму из архитектуры (в т.ч. правило завершения задачи: `phase === 'done'` или `finishedAt !== null`).
-      - `ai/dev-studio/dashboard/src/components/RoomView.tsx` — сцена openspace: рабочая зона (столы/мониторы) и лаунж; шесть персонажей по результату `computeAgentPlacements`.
-      - `ai/dev-studio/dashboard/src/components/room/AgentCharacter.tsx` — пиксельные SVG-силуэты по роли, подпись/тултип, бейдж статуса у агента за столом.
-      - `ai/dev-studio/dashboard/src/App.tsx` — состояние `dashboardView`, переключатель «Сводка» / «Комната», ветвление контента; `RoomView` только при валидной задаче без loading/error (как и Live).
-      - `ai/dev-studio/dashboard/src/App.css` — стили переключателя, комнаты, зон, персонажей, `prefers-reduced-motion` для анимации появления.
+      - `dashboard/src/room/placement.ts` — типы `RoomZone`, `AgentRoomPlacement`, `AgentPlacementsMap` и `computeAgentPlacements` по алгоритму из архитектуры (в т.ч. правило завершения задачи: `phase === 'done'` или `finishedAt !== null`).
+      - `dashboard/src/components/RoomView.tsx` — сцена openspace: рабочая зона (столы/мониторы) и лаунж; шесть персонажей по результату `computeAgentPlacements`.
+      - `dashboard/src/components/room/AgentCharacter.tsx` — пиксельные SVG-силуэты по роли, подпись/тултип, бейдж статуса у агента за столом.
+      - `dashboard/src/App.tsx` — состояние `dashboardView`, переключатель «Сводка» / «Комната», ветвление контента; `RoomView` только при валидной задаче без loading/error (как и Live).
+      - `dashboard/src/App.css` — стили переключателя, комнаты, зон, персонажей, `prefers-reduced-motion` для анимации появления.
 
       ## Ключевые решения при реализации
       - Юнит-тесты для `computeAgentPlacements` не добавлены: в `package.json` нет vitest/jest; проверка — `npm run check` (tsc).
       - Отдельный `RoomView.css` не вводился: стили с префиксом `.room-` в `App.css`.
 
       ## Как проверить вручную
-      1. `cd ai/dev-studio/dashboard && npm run dev` (или уже запущенный стек), открыть dashboard.
+      1. `cd dashboard && npm run dev` (или уже запущенный стек), открыть dashboard.
       2. Выбрать задачу в левом списке; убедиться, что переключатель «Сводка» / «Комната» не сбрасывает выбор при переключении.
       3. В режиме «Комната»: при текущем execution со статусом `in-progress` один персонаж (роль этого execution) в рабочей зоне с бейджем «В процессе»; остальные в лаунже.
       4. Если задача завершена (`phase === 'done'` или есть `finishedAt`), или текущий execution не `in-progress`, или нет задачи / ошибка / загрузка — в комнате все шесть в лаунже; при загрузке/ошибке блок Room не показывается.
@@ -201,11 +201,11 @@ executions:
       ## Решение: Approve
 
       ## Проверенные файлы
-      - `ai/dev-studio/dashboard/src/room/placement.ts` — ok: алгоритм совпадает с архитектурой (`getCurrentExecution`, завершение задачи `phase === 'done'` или `finishedAt !== null`, стол только при `status === 'in-progress'`).
-      - `ai/dev-studio/dashboard/src/components/RoomView.tsx` — ok: контракт `RoomViewProps`, шесть агентов по зонам, корневой класс `room-scene` для reduced-motion.
-      - `ai/dev-studio/dashboard/src/components/room/AgentCharacter.tsx` — ok: различимые SVG-паттерны по роли, подпись/`title`, бейдж у агента за столом.
-      - `ai/dev-studio/dashboard/src/App.tsx` — ok: `dashboardView`, переключатель «Сводка» / «Комната», `RoomView` только в ветке с валидной задачей без loading/error (устаревшая сцена не монтируется).
-      - `ai/dev-studio/dashboard/src/App.css` — ok: зоны комнаты, переключатель, `prefers-reduced-motion` для анимации агентов.
+      - `dashboard/src/room/placement.ts` — ok: алгоритм совпадает с архитектурой (`getCurrentExecution`, завершение задачи `phase === 'done'` или `finishedAt !== null`, стол только при `status === 'in-progress'`).
+      - `dashboard/src/components/RoomView.tsx` — ok: контракт `RoomViewProps`, шесть агентов по зонам, корневой класс `room-scene` для reduced-motion.
+      - `dashboard/src/components/room/AgentCharacter.tsx` — ok: различимые SVG-паттерны по роли, подпись/`title`, бейдж у агента за столом.
+      - `dashboard/src/App.tsx` — ok: `dashboardView`, переключатель «Сводка» / «Комната», `RoomView` только в ветке с валидной задачей без loading/error (устаревшая сцена не монтируется).
+      - `dashboard/src/App.css` — ok: зоны комнаты, переключатель, `prefers-reduced-motion` для анимации агентов.
 
       ## Замечания (некритичные, для сведения разработчика)
       - В `App.css` есть дублирующиеся блоки стилей для переключателя вида и комнаты (ранний и поздний набор правил с разной специфичностью каскада); на поведение сейчас это не влияет, но усложняет сопровождение — имеет смысл позже свести к одному слою.
@@ -223,7 +223,7 @@ executions:
     output_data: |
       ## Результат: проверка типов и сценарии
 
-      Прогон `npm run check` (tsc -b) в `ai/dev-studio/dashboard`: **успех**, exit code 0.
+      Прогон `npm run check` (tsc -b) в `dashboard`: **успех**, exit code 0.
 
       Реализация `computeAgentPlacements`, `RoomView`, `AgentCharacter` и ветвления в `App.tsx` согласована с execution 1–4: правило завершения задачи (`phase === 'done'` или `finishedAt !== null`), стол только при `getCurrentExecution` + `status === 'in-progress'`, `RoomView` только при валидной задаче без loading/error.
 
@@ -242,7 +242,7 @@ executions:
 
       ## Предложенные юнит-тесты (только текст; файл не создавался)
 
-      **Путь (рекомендация):** `ai/dev-studio/dashboard/src/room/placement.test.ts` после добавления vitest в проект.
+      **Путь (рекомендация):** `dashboard/src/room/placement.test.ts` после добавления vitest в проект.
 
       ```typescript
       import { describe, it, expect } from 'vitest'
@@ -390,12 +390,12 @@ executions:
       ## Результат: Done
 
       ## Созданные документы
-      - ai/dev-studio/docs/c7e4b2-dashboard-room-view/architecture.md — архитектура системы
-      - ai/dev-studio/docs/c7e4b2-dashboard-room-view/changelog.md — история изменений
-      - ai/dev-studio/docs/c7e4b2-dashboard-room-view/issues.md — реестр проблем
+      - docs/c7e4b2-dashboard-room-view/architecture.md — архитектура системы
+      - docs/c7e4b2-dashboard-room-view/changelog.md — история изменений
+      - docs/c7e4b2-dashboard-room-view/issues.md — реестр проблем
 
       ## Источники
       - Проанализировано executions: 6
-      - Git коммитов по файлам реализации execution 3: 0 (каталог `ai/dev-studio/dashboard/` не отслеживается git — untracked)
+      - Git коммитов по файлам реализации execution 3: 0 (каталог `dashboard/` не отслеживается git — untracked)
       - Зафиксировано проблем (возвраты / упавшие тесты): 0
     status: done

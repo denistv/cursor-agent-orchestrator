@@ -41,7 +41,7 @@ export function ExecutionTimeline({
             <span>
               {hasTaskMemory
                 ? 'Файл памяти найден, но executions ещё не добавлены.'
-                : 'Как только оркестратор создаст соответствующий TASK_MEMORY файл, здесь появится история execution.'}
+                : 'Как только оркестратор создаст memory/TASK_MEMORY_*.yml, здесь появится история execution.'}
             </span>
           </div>
         ) : (

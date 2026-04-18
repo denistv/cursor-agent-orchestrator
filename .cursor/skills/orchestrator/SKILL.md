@@ -2,9 +2,9 @@
 name: orchestrator
 description: >-
   Оркестратор Dev Studio. Управляет движением задач по доске согласно FSM.
-  Читает TaskBoard.md и TASK_MEMORY, создаёт executions с полем agent_type,
+  Читает memory/TaskBoard.md и memory/TASK_MEMORY_*.yml, создаёт executions с полем agent_type,
   запускает субагентов. Использовать для запуска и координации полного
-  SDLC-цикла над задачами из TaskBoard.
+  SDLC-цикла над задачами из memory/TaskBoard.md.
 ---
 
 # Dev Studio Orchestrator
@@ -16,17 +16,17 @@ description: >-
 
 **Инвариант:** ты создаёшь запись execution со `status: new` и запускаешь субагента. Субагент **обязан** первым изменением в памяти перевести этот execution в `in-progress` (с `started_at`) и сохранить YAML **до** любой содержательной работы по задаче; иначе это нарушение протокола (`task-protocol.md`, раздел Execution).
 
-Подробные форматы данных: `ai/dev-studio/task-protocol.md`.
+Подробные форматы данных: `task-protocol.md`.
 
 ## Расположение файлов
 
-Все файлы Dev Studio находятся в директории `ai/dev-studio/`:
+Доска и файлы памяти лежат в каталоге **`memory/`** в корне репозитория:
 
-- `ai/dev-studio/TaskBoard.md` — доска активных задач
-- `ai/dev-studio/TASK_MEMORY_{hex}.yml` — память по каждой задаче (YAML)
-- `ai/dev-studio/task-protocol.md` — полный reference по форматам данных
+- `memory/TaskBoard.md` — доска активных задач
+- `memory/TASK_MEMORY_{hex}.yml` — память по каждой задаче (YAML)
+- `task-protocol.md` — полный reference по форматам данных
 
-Скиллы субагентов: `ai/dev-studio/.cursor/skills/{role}/SKILL.md`
+Скиллы субагентов: `.cursor/skills/{role}/SKILL.md`
 
 ## FSM — таблица допустимых переходов по `agent_type`
 
@@ -62,7 +62,7 @@ tech-writer   → []   // после успешного execution — конец
 
 ### Шаг 1. Прочитать TaskBoard
 
-Открой `ai/dev-studio/TaskBoard.md` и найди задачи, требующие обработки:
+Открой `memory/TaskBoard.md` и найди задачи, требующие обработки:
 
 - Задачи с `State`, отличным от `done` (в т.ч. `new`, `analysis`, … — см. `task-protocol.md`)
 - Пропускай задачи в `State: done`
@@ -73,7 +73,7 @@ tech-writer   → []   // после успешного execution — конец
 
 Берёт первую подходящую задачу сверху.
 
-Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml` для этой задачи (если файл существует).
+Прочитай `memory/TASK_MEMORY_{hex}.yml` для этой задачи (если файл существует).
 Если файла нет — создай его **до** запуска любого субагента:
 
 ```yaml
@@ -130,16 +130,16 @@ executions: []
 ```text
 task_id: {task_id}
 execution_id: {N}
-Прочитай skill: ai/dev-studio/.cursor/skills/{role}/SKILL.md и выполни работу согласно инструкции.
+Прочитай skill: .cursor/skills/{role}/SKILL.md и выполни работу согласно инструкции.
 ```
 
-В инструкции для субагента подразумевается: **сначала** проверка `execution` со `status: new`, **затем** запись `new` → `in-progress` в `TASK_MEMORY_{hex}.yml`, **затем** содержательная работа этапа.
+В инструкции для субагента подразумевается: **сначала** проверка `execution` со `status: new`, **затем** запись `new` → `in-progress` в `memory/TASK_MEMORY_{hex}.yml`, **затем** содержательная работа этапа.
 
 Дожидайся завершения субагента.
 
 ### Шаг 7. Прочитать результат
 
-После завершения субагента прочитай `TASK_MEMORY_{hex}.yml`.
+После завершения субагента прочитай `memory/TASK_MEMORY_{hex}.yml`.
 
 Найди execution с `id = current_execution_id`:
 
@@ -155,7 +155,7 @@ execution_id: {N}
 
 ### Шаг 8. Обновить TaskBoard
 
-Синхронизируй `State` в `ai/dev-studio/TaskBoard.md` с текущим этапом (по `current_execution_id` → `agent_type` или `done` после завершения пайплайна).
+Синхронизируй `State` в `memory/TaskBoard.md` с текущим этапом (по `current_execution_id` → `agent_type` или `done` после завершения пайплайна).
 
 ### Шаг 9. Продолжение
 

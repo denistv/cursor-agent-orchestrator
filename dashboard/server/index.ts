@@ -1,5 +1,5 @@
 import { createServer } from 'node:http'
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import chokidar from 'chokidar'
 import express, { type Response } from 'express'
@@ -7,7 +7,22 @@ import { getTasksPayload, type TasksPayload } from './parser.ts'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const dataDir = join(__dirname, '..', '..')
+const repoRoot = resolve(__dirname, '..', '..')
+
+/**
+ * Каталог состояния: `TaskBoard.md` и `TASK_MEMORY_*.yml` лежат в `memory/` в корне репозитория.
+ * Переопределение: `DASHBOARD_DATA_DIR` или `DEV_STUDIO_DATA_DIR` — абсолютный путь к каталогу,
+ * где лежат эти файлы (часто `<repo>/memory`).
+ */
+function resolveStateDirectory(): string {
+  const fromEnv = process.env.DASHBOARD_DATA_DIR ?? process.env.DEV_STUDIO_DATA_DIR
+  if (fromEnv?.trim()) {
+    return resolve(fromEnv.trim())
+  }
+  return resolve(repoRoot, 'memory')
+}
+
+const stateDir = resolveStateDirectory()
 const port = Number(process.env.PORT ?? 3001)
 
 const app = express()
@@ -23,7 +38,7 @@ function writeEvent(response: Response, payload: TasksPayload) {
 }
 
 async function loadPayload(): Promise<TasksPayload> {
-  return getTasksPayload(dataDir)
+  return getTasksPayload(stateDir)
 }
 
 async function broadcastUpdate(attempt = 1) {
@@ -83,7 +98,7 @@ app.get('/api/events', async (_request, response) => {
 
 const httpServer = createServer(app)
 
-const watcher = chokidar.watch([join(dataDir, 'TaskBoard.md'), join(dataDir, 'TASK_MEMORY_*.yml')], {
+const watcher = chokidar.watch([join(stateDir, 'TaskBoard.md'), join(stateDir, 'TASK_MEMORY_*.yml')], {
   ignoreInitial: true,
   awaitWriteFinish: {
     stabilityThreshold: 200,
@@ -97,6 +112,7 @@ watcher.on('unlink', scheduleBroadcastUpdate)
 
 httpServer.listen(port, () => {
   process.stdout.write(`Dev Studio dashboard server is listening on http://localhost:${port}\n`)
+  process.stdout.write(`State directory (memory/TaskBoard.md, memory/TASK_MEMORY_*.yml): ${stateDir}\n`)
 })
 
 async function shutdown(signal: string) {

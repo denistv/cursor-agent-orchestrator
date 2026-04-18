@@ -11,7 +11,7 @@ executions:
     finished_at: "2026-04-16T18:17:02Z"
     output_data: |
       ## Функциональные требования
-      - Найти и устранить причину, по которой в `ai/dev-studio/examples/go-rest-api` после успешного создания записи через `POST /items` данные не сохраняются в SQLite.
+      - Найти и устранить причину, по которой в `examples/go-rest-api` после успешного создания записи через `POST /items` данные не сохраняются в SQLite.
       - После исправления `POST /items` должен по-прежнему возвращать `201 Created` и JSON созданной сущности `Item` с корректными полями `id`, `title`, `done`, `created_at`.
       - Созданная запись должна быть доступна в последующих операциях чтения через текущее хранилище: `GET /items` и `GET /items/{id}`.
       - Сохранение должно происходить в SQLite по тому DSN, с которым запущен сервер, включая файловую БД по умолчанию и поддерживаемый режим `:memory:` для тестов.
@@ -101,11 +101,11 @@ executions:
 
       ## Файловая структура
       Предполагаемые изменения по файлам:
-      - `ai/dev-studio/examples/go-rest-api/cmd/server/main.go` — вынести подготовку DSN в helper и добавить логирование фактического SQLite-источника.
-      - `ai/dev-studio/examples/go-rest-api/cmd/server/config.go` или локальный helper в `main.go` — функция разрешения дефолтного DSN.
-      - `ai/dev-studio/examples/go-rest-api/internal/storage/sqlite.go` — централизовать настройки пула/PRAGMA для SQLite.
-      - `ai/dev-studio/examples/go-rest-api/internal/storage/sqlite_test.go` — добавить regression-тест "create -> close -> reopen -> read from same file DB".
-      - при необходимости `ai/dev-studio/examples/go-rest-api/cmd/server/main_test.go` или `config_test.go` — тест на корректное разрешение дефолтного DSN и сохранение special-case для `:memory:`.
+      - `examples/go-rest-api/cmd/server/main.go` — вынести подготовку DSN в helper и добавить логирование фактического SQLite-источника.
+      - `examples/go-rest-api/cmd/server/config.go` или локальный helper в `main.go` — функция разрешения дефолтного DSN.
+      - `examples/go-rest-api/internal/storage/sqlite.go` — централизовать настройки пула/PRAGMA для SQLite.
+      - `examples/go-rest-api/internal/storage/sqlite_test.go` — добавить regression-тест "create -> close -> reopen -> read from same file DB".
+      - при необходимости `examples/go-rest-api/cmd/server/main_test.go` или `config_test.go` — тест на корректное разрешение дефолтного DSN и сохранение special-case для `:memory:`.
 
       ## Открытые решения
       - Основной рекомендуемый путь: исправлять именно подготовку DSN и regression-покрытие, а не переписывать CRUD-методы, потому что публичный API и базовая storage-логика уже соответствуют требованиям.
@@ -120,11 +120,11 @@ executions:
     finished_at: "2026-04-16T18:33:44Z"
     output_data: |
       ## Реализованные файлы
-      - ai/dev-studio/examples/go-rest-api/cmd/server/main.go — точка входа сервера теперь использует разрешённый SQLite DSN и логирует фактический источник БД при старте.
-      - ai/dev-studio/examples/go-rest-api/cmd/server/config.go — добавлен helper `resolveSQLiteDSN`, который переводит дефолтный файловый DSN в абсолютный путь и сохраняет явные DSN без изменений.
-      - ai/dev-studio/examples/go-rest-api/cmd/server/config_test.go — добавлены тесты на абсолютный дефолтный путь и special-case для явных DSN, включая `:memory:`.
-      - ai/dev-studio/examples/go-rest-api/internal/storage/sqlite.go — централизована инициализация SQLite: проверка подключения, ограничения пула и `PRAGMA busy_timeout`.
-      - ai/dev-studio/examples/go-rest-api/internal/storage/sqlite_test.go — добавлен regression-тест на сценарий `create -> close -> reopen -> read` для файловой SQLite.
+      - examples/go-rest-api/cmd/server/main.go — точка входа сервера теперь использует разрешённый SQLite DSN и логирует фактический источник БД при старте.
+      - examples/go-rest-api/cmd/server/config.go — добавлен helper `resolveSQLiteDSN`, который переводит дефолтный файловый DSN в абсолютный путь и сохраняет явные DSN без изменений.
+      - examples/go-rest-api/cmd/server/config_test.go — добавлены тесты на абсолютный дефолтный путь и special-case для явных DSN, включая `:memory:`.
+      - examples/go-rest-api/internal/storage/sqlite.go — централизована инициализация SQLite: проверка подключения, ограничения пула и `PRAGMA busy_timeout`.
+      - examples/go-rest-api/internal/storage/sqlite_test.go — добавлен regression-тест на сценарий `create -> close -> reopen -> read` для файловой SQLite.
 
       ## Ключевые решения при реализации
       - Основной фикс выполнен через нормализацию дефолтного SQLite-пути до абсолютного, чтобы сервер и последующая проверка работали с одним и тем же файлом БД.
@@ -155,11 +155,11 @@ executions:
       ## Решение: Approve
 
       ## Проверенные файлы
-      - ai/dev-studio/examples/go-rest-api/cmd/server/main.go — использование разрешённого SQLite DSN и логирование фактического источника БД проверены, отклонений от архитектуры не найдено.
-      - ai/dev-studio/examples/go-rest-api/cmd/server/config.go — helper `resolveSQLiteDSN` соответствует архитектурному решению: дефолтный путь нормализуется, явные DSN сохраняются без изменений.
-      - ai/dev-studio/examples/go-rest-api/cmd/server/config_test.go — покрыт default path и special-case для явных DSN, включая `:memory:`.
-      - ai/dev-studio/examples/go-rest-api/internal/storage/sqlite.go — инициализация SQLite с `SetMaxOpenConns(1)`, `SetMaxIdleConns(1)` и `PRAGMA busy_timeout` выглядит корректной и не меняет публичный контракт storage.
-      - ai/dev-studio/examples/go-rest-api/internal/storage/sqlite_test.go — regression-тест на сценарий `create -> close -> reopen -> read` подтверждает сохранение данных в файловой SQLite.
+      - examples/go-rest-api/cmd/server/main.go — использование разрешённого SQLite DSN и логирование фактического источника БД проверены, отклонений от архитектуры не найдено.
+      - examples/go-rest-api/cmd/server/config.go — helper `resolveSQLiteDSN` соответствует архитектурному решению: дефолтный путь нормализуется, явные DSN сохраняются без изменений.
+      - examples/go-rest-api/cmd/server/config_test.go — покрыт default path и special-case для явных DSN, включая `:memory:`.
+      - examples/go-rest-api/internal/storage/sqlite.go — инициализация SQLite с `SetMaxOpenConns(1)`, `SetMaxIdleConns(1)` и `PRAGMA busy_timeout` выглядит корректной и не меняет публичный контракт storage.
+      - examples/go-rest-api/internal/storage/sqlite_test.go — regression-тест на сценарий `create -> close -> reopen -> read` подтверждает сохранение данных в файловой SQLite.
 
       ## Замечания (некритичные, для сведения разработчика)
       - Существенных замечаний нет.
@@ -179,7 +179,7 @@ executions:
       ## Результат: Тесты прошли
 
       ## Написанные тесты
-      - ai/dev-studio/examples/go-rest-api/internal/handler/item_test.go — добавлены regression-тесты для цепочки `POST /items -> GET /items/{id}` и для `500`-ответов без утечки внутренних деталей storage.
+      - examples/go-rest-api/internal/handler/item_test.go — добавлены regression-тесты для цепочки `POST /items -> GET /items/{id}` и для `500`-ответов без утечки внутренних деталей storage.
 
       ## Покрытие требований
       - [REQ-1] Найти и устранить причину потери записи после `POST /items` — покрыто файловым regression-тестом `TestCreateItemPersistsAfterReopenFileDB` в `internal/storage/sqlite_test.go`.
@@ -205,9 +205,9 @@ executions:
       ## Результат: Done
 
       ## Созданные документы
-      - ai/dev-studio/docs/b74c2e-go-rest-api-sqlite-write-bug/architecture.md — архитектура системы
-      - ai/dev-studio/docs/b74c2e-go-rest-api-sqlite-write-bug/changelog.md — история изменений
-      - ai/dev-studio/docs/b74c2e-go-rest-api-sqlite-write-bug/issues.md — реестр проблем
+      - docs/b74c2e-go-rest-api-sqlite-write-bug/architecture.md — архитектура системы
+      - docs/b74c2e-go-rest-api-sqlite-write-bug/changelog.md — история изменений
+      - docs/b74c2e-go-rest-api-sqlite-write-bug/issues.md — реестр проблем
 
       ## Источники
       - Проанализировано executions: 5

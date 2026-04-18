@@ -17,17 +17,17 @@ description: >-
 
 Этот скилл **не меняет прикладной код и артефакты продукта**: не создавай, не редактируй и не удаляй исходники, тесты, конфиги, миграции и документацию вне обязательного обновления памяти задачи.
 
-**Разрешено:** читать любые файлы, нужные для анализа; по протоколу Dev Studio — обновлять **только** запись текущего `execution` в `ai/dev-studio/TASK_MEMORY_{hex}.yml` (`status`, `started_at`, `finished_at`, `output_data`) и при необходимости один раз заполнить `started_at` у `Task` в этом же файле, как в шагах ниже.
+**Разрешено:** читать любые файлы, нужные для анализа; по протоколу Dev Studio — обновлять **только** запись текущего `execution` в `memory/TASK_MEMORY_{hex}.yml` (`status`, `started_at`, `finished_at`, `output_data`) и при необходимости один раз заполнить `started_at` у `Task` в этом же файле, как в шагах ниже.
 
-**Запрещено:** править `TaskBoard.md`, другие записи `executions` или корневые поля задачи сверх указанного в протоколе, создавать новые файлы памяти без оркестратора, выполнять `git commit` / `git push`, менять код в `examples/`, `dashboard/` и т.п.
+**Запрещено:** править `memory/TaskBoard.md`, другие записи `executions` или корневые поля задачи сверх указанного в протоколе, создавать новые файлы памяти без оркестратора, выполнять `git commit` / `git push`, менять код в `examples/`, `dashboard/` и т.п.
 
 Итог работы — **содержимое `output_data`** (и корректные статусы execution); оркестратор двигает доску и создаёт следующие executions.
 
 ## Расположение файлов
 
-- `ai/dev-studio/TaskBoard.md` — доска задач
-- `ai/dev-studio/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
-- `ai/dev-studio/task-protocol.md` — форматы данных (прочитай при необходимости)
+- `memory/TaskBoard.md` — доска задач
+- `memory/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
+- `task-protocol.md` — форматы данных (прочитай при необходимости)
 
 ## Входные данные
 
@@ -39,7 +39,7 @@ description: >-
 
 ### Шаг 1. Прочитать память для проверки execution
 
-Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** проводи анализ требований и **не** читай `TaskBoard.md` целиком ради содержания задачи — только данные, нужные для шага 2 (идентификаторы, строка текущего execution).
+Прочитай `memory/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** проводи анализ требований и **не** читай `memory/TaskBoard.md` целиком ради содержания задачи — только данные, нужные для шага 2 (идентификаторы, строка текущего execution).
 
 ### Шаг 2. Проверить подготовленный Execution
 
@@ -56,14 +56,14 @@ description: >-
 1. Если `started_at` у Task ещё пустой — заполни его текущим временем
 2. Обнови `status: new` → `status: in-progress` в текущем execution
 3. Заполни `started_at` у текущего execution
-4. Сохрани `TASK_MEMORY_{hex}.yml`
+4. Сохрани `memory/TASK_MEMORY_{hex}.yml`
 
 **Дальше** разрешена содержательная работа по задаче (`task-protocol.md`).
 
 ### Шаг 4. Прочитать входные данные
 
-1. Прочитай `ai/dev-studio/TaskBoard.md` — найди задачу по `task_id`, возьми `Description`
-2. Перечитай при необходимости `TASK_MEMORY_{hex}.yml` — изучи историю `executions` и их `agent_type`, возьми `output_data` из предыдущих завершённых шагов, если они есть
+1. Прочитай `memory/TaskBoard.md` — найди задачу по `task_id`, возьми `Description`
+2. Перечитай при необходимости `memory/TASK_MEMORY_{hex}.yml` — изучи историю `executions` и их `agent_type`, возьми `output_data` из предыдущих завершённых шагов, если они есть
 
 ### Шаг 5. Провести анализ требований
 
@@ -111,10 +111,10 @@ description: >-
 
 ### Шаг 7. Завершение
 
-В корне `TASK_MEMORY_{hex}.yml` **нет** поля `state` у задачи. Не добавляй его.
+В корне `memory/TASK_MEMORY_{hex}.yml` **нет** поля `state` у задачи. Не добавляй его.
 
 1. Убедись, что текущий execution переведён в `status: done` (или `fail`) с заполненными полями.
-2. Следующий execution с `agent_type: architect` и обновление `State` на `TaskBoard.md` выполняет **оркестратор** (`task-protocol.md`).
+2. Следующий execution с `agent_type: architect` и обновление `State` на `memory/TaskBoard.md` выполняет **оркестратор** (`task-protocol.md`).
 
 ## Критерий готовности
 

@@ -89,7 +89,7 @@ export function TaskSummary({ task }: TaskSummaryProps) {
               ? memoryMismatch
                 ? `task_id в YAML: ${task.memoryTaskId}`
                 : `current_execution_id: ${task.currentExecutionId ?? 'null'}`
-              : 'Executions появятся после создания TASK_MEMORY файла'}
+              : 'Executions появятся после создания memory/TASK_MEMORY_*.yml'}
           </span>
         </article>
       </div>

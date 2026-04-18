@@ -17,17 +17,17 @@ description: >-
 
 Этот скилл **не меняет прикладной код и артефакты продукта**: не создавай файлы реализации, не правь существующий код и конфиги вне обязательного обновления памяти задачи.
 
-**Разрешено:** читать код и документацию для контекста; по протоколу Dev Studio — обновлять **только** запись текущего `execution` в `ai/dev-studio/TASK_MEMORY_{hex}.yml` (`status`, `started_at`, `finished_at`, `output_data`) и при необходимости заполнить `started_at` у `Task` в этом же файле, как в шагах ниже.
+**Разрешено:** читать код и документацию для контекста; по протоколу Dev Studio — обновлять **только** запись текущего `execution` в `memory/TASK_MEMORY_{hex}.yml` (`status`, `started_at`, `finished_at`, `output_data`) и при необходимости заполнить `started_at` у `Task` в этом же файле, как в шагах ниже.
 
-**Запрещено:** править `TaskBoard.md`, другие `executions`, выполнять `git commit` / `git push`, добавлять реализацию в `examples/`, `dashboard/` и т.п.
+**Запрещено:** править `memory/TaskBoard.md`, другие `executions`, выполнять `git commit` / `git push`, добавлять реализацию в `examples/`, `dashboard/` и т.п.
 
 Итог работы — **архитектурный документ в `output_data`**; реализацию пишет `development`.
 
 ## Расположение файлов
 
-- `ai/dev-studio/TaskBoard.md` — доска задач
-- `ai/dev-studio/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
-- `ai/dev-studio/task-protocol.md` — форматы данных (прочитай при необходимости)
+- `memory/TaskBoard.md` — доска задач
+- `memory/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
+- `task-protocol.md` — форматы данных (прочитай при необходимости)
 
 ## Входные данные
 
@@ -39,7 +39,7 @@ description: >-
 
 ### Шаг 1. Прочитать память для проверки execution
 
-Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** извлекай требования из `output_data` и **не** проектируй решение — только данные для шага 2.
+Прочитай `memory/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** извлекай требования из `output_data` и **не** проектируй решение — только данные для шага 2.
 
 ### Шаг 2. Проверить подготовленный Execution
 
@@ -56,13 +56,13 @@ description: >-
 - если `started_at` у Task ещё пустой — заполни его текущим временем
 - обнови `status: new` → `status: in-progress`
 - заполни `started_at` у execution
-- сохрани `TASK_MEMORY_{hex}.yml`
+- сохрани `memory/TASK_MEMORY_{hex}.yml`
 
 **Дальше** разрешена содержательная работа по задаче (`task-protocol.md`).
 
 ### Шаг 4. Прочитать контекст (входные данные)
 
-1. Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml` — найди последний execution с `status: done`
+1. Прочитай `memory/TASK_MEMORY_{hex}.yml` — найди последний execution с `status: done`
 2. Возьми `output_data` последнего завершённого execution — это требования от аналитика
 3. Прочитай всю историю executions для полного контекста
 
@@ -137,7 +137,7 @@ description: >-
 Не добавляй в корень YAML поле `state` у задачи.
 
 1. Убедись, что текущий execution в `status: done` (или `fail`) с корректными временными метками.
-2. Следующий execution (`agent_type: development` или `analysis` при возврате) и строка `State` на `TaskBoard.md` — зона ответственности **оркестратора**.
+2. Следующий execution (`agent_type: development` или `analysis` при возврате) и строка `State` на `memory/TaskBoard.md` — зона ответственности **оркестратора**.
 
 ## Критерий готовности
 

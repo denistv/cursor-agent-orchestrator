@@ -15,9 +15,9 @@ description: >-
 
 ## Расположение файлов
 
-- `ai/dev-studio/TaskBoard.md` — доска задач
-- `ai/dev-studio/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
-- `ai/dev-studio/task-protocol.md` — форматы данных (прочитай при необходимости)
+- `memory/TaskBoard.md` — доска задач
+- `memory/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
+- `task-protocol.md` — форматы данных (прочитай при необходимости)
 
 ## Входные данные
 
@@ -29,7 +29,7 @@ description: >-
 
 ### Шаг 1. Прочитать память для проверки execution
 
-Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** извлекай архитектурный документ из `output_data` и **не** меняй код — только данные для шага 2.
+Прочитай `memory/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** извлекай архитектурный документ из `output_data` и **не** меняй код — только данные для шага 2.
 
 ### Шаг 2. Проверить подготовленный Execution
 
@@ -46,13 +46,13 @@ description: >-
 - если `started_at` у Task ещё пустой — заполни его текущим временем
 - обнови `status: new` → `status: in-progress`
 - заполни `started_at` у execution
-- сохрани `TASK_MEMORY_{hex}.yml`
+- сохрани `memory/TASK_MEMORY_{hex}.yml`
 
 **Дальше** разрешена содержательная работа по задаче (`task-protocol.md`).
 
 ### Шаг 4. Прочитать архитектурный документ
 
-1. Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml`
+1. Прочитай `memory/TASK_MEMORY_{hex}.yml`
 2. Найди последний execution с `status: done` — это архитектурный документ от architect
 3. Также прочитай более ранние executions для понимания первоначальных требований
 
@@ -121,7 +121,7 @@ description: >-
 Не добавляй в корень YAML поле `state` у задачи.
 
 1. Убедись, что текущий execution в `status: done` или `fail` с корректными метками времени.
-2. Следующий execution (`agent_type: code-review`, `architect` при возврате и т.д.) и `TaskBoard.md` обновляет **оркестратор**.
+2. Следующий execution (`agent_type: code-review`, `architect` при возврате и т.д.) и `memory/TaskBoard.md` обновляет **оркестратор**.
 
 ## Критерий готовности
 

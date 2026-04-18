@@ -25,7 +25,7 @@ export type StatusTone = ExecutionStatus
 export interface Execution {
   id: number
   parentExecutionId: number | null
-  /** Соответствует полю `agent_type` в `TASK_MEMORY_*.yml`. */
+  /** Соответствует полю `agent_type` в `memory/TASK_MEMORY_*.yml`. */
   agentType: AgentType
   startedAt: string | null
   finishedAt: string | null

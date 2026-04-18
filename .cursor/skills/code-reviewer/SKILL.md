@@ -18,17 +18,17 @@ description: >-
 
 Этот скилл **не меняет прикладной код и артефакты продукта**: не правь ревьюируемые файлы, не вноси «исправления за разработчика», не создавай и не удаляй файлы в репозитории вне обновления памяти задачи.
 
-**Разрешено:** читать любые файлы, нужные для ревью; по протоколу Dev Studio — обновлять **только** запись текущего `execution` в `ai/dev-studio/TASK_MEMORY_{hex}.yml` (`status`, `started_at`, `finished_at`, `output_data`) и при необходимости заполнить `started_at` у `Task` в этом же файле, как в шагах ниже.
+**Разрешено:** читать любые файлы, нужные для ревью; по протоколу Dev Studio — обновлять **только** запись текущего `execution` в `memory/TASK_MEMORY_{hex}.yml` (`status`, `started_at`, `finished_at`, `output_data`) и при необходимости заполнить `started_at` у `Task` в этом же файле, как в шагах ниже.
 
-**Запрещено:** править `TaskBoard.md`, другие `executions`, выполнять `git commit` / `git push`, менять код под ревью.
+**Запрещено:** править `memory/TaskBoard.md`, другие `executions`, выполнять `git commit` / `git push`, менять код под ревью.
 
 Итог работы — **вердикт и замечания в `output_data`**; правки кода делает `development`.
 
 ## Расположение файлов
 
-- `ai/dev-studio/TaskBoard.md` — доска задач
-- `ai/dev-studio/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
-- `ai/dev-studio/task-protocol.md` — форматы данных
+- `memory/TaskBoard.md` — доска задач
+- `memory/TASK_MEMORY_{hex}.yml` — память по задаче (YAML)
+- `task-protocol.md` — форматы данных
 
 ## Входные данные
 
@@ -40,7 +40,7 @@ description: >-
 
 ### Шаг 1. Прочитать память для проверки execution
 
-Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** читай реализованные файлы и **не** проводи ревью — только данные для шага 2.
+Прочитай `memory/TASK_MEMORY_{hex}.yml` и найди запись execution для этого запуска. На этом шаге **не** читай реализованные файлы и **не** проводи ревью — только данные для шага 2.
 
 ### Шаг 2. Проверить подготовленный Execution
 
@@ -57,13 +57,13 @@ description: >-
 - если `started_at` у Task ещё пустой — заполни его текущим временем
 - обнови `status: new` → `status: in-progress`
 - заполни `started_at` у execution
-- сохрани `TASK_MEMORY_{hex}.yml`
+- сохрани `memory/TASK_MEMORY_{hex}.yml`
 
 **Дальше** разрешена содержательная работа по задаче (`task-protocol.md`).
 
 ### Шаг 4. Прочитать контекст
 
-1. Прочитай `ai/dev-studio/TASK_MEMORY_{hex}.yml` полностью
+1. Прочитай `memory/TASK_MEMORY_{hex}.yml` полностью
 2. Найди:
    - execution с архитектурой (`agent_type: architect`) — это эталон для сверки
    - Последний execution с `status: done` — это результат разработки: список реализованных файлов
@@ -162,7 +162,7 @@ description: >-
 Не добавляй в корень YAML поле `state` у задачи.
 
 1. Убедись, что текущий execution в `status: done` с заполненным `output_data` (решение Approve / Request Changes).
-2. При **Request changes** добавь в `output_data` раздел `## Следующий этап: development` с обоснованием; при **Approve** — `## Следующий этап: testing`. Следующий execution и `TaskBoard.md` обновляет **оркестратор**.
+2. При **Request changes** добавь в `output_data` раздел `## Следующий этап: development` с обоснованием; при **Approve** — `## Следующий этап: testing`. Следующий execution и `memory/TaskBoard.md` обновляет **оркестратор**.
 
 ## Принципы ревью
 
