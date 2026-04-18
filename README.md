@@ -24,6 +24,50 @@
 
 **Трассируемость.** Каждый агент фиксирует свой `output_data` в `TASK_MEMORY_*.yml`. Это создаёт полный audit trail: кто что решил, на каком этапе и почему.
 
+### FSM переходов между этапами
+
+Оркестратор выбирает следующий `agent_type` по таблице допустимых переходов — только после `status: done` у текущего execution. После `fail` оркестратор анализирует всю историю и выбирает шаг свободно.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    [*] --> analysis : старт задачи
+
+    analysis --> architect
+
+    architect --> analysis : пересмотр требований
+    architect --> development
+
+    development --> architect : пересмотр архитектуры
+    development --> code_review : code-review
+
+    code_review --> development : замечания
+    code_review --> testing
+
+    testing --> development : ошибки реализации
+    testing --> tech_writer : tech-writer
+
+    tech_writer --> [*] : задача завершена
+```
+
+### Жизненный цикл Execution
+
+Каждый запуск агента — отдельная запись `Execution` в памяти задачи. Статус меняется линейно:
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> new : оркестратор создаёт execution
+    new --> in_progress : агент фиксирует старт
+    in_progress --> done : работа выполнена успешно
+    in_progress --> fail : агент завершился с ошибкой
+
+    note right of new : субагент не выполняет\nсодержательную работу
+    note right of done : оркестратор выбирает\nследующий шаг по FSM
+    note right of fail : оркестратор анализирует\nвсю историю executions
+```
+
 ## Запуск оркестратора (точка входа)
 
 Точка входа в процесс — **скилл оркестратора** ([`.cursor/skills/orchestrator/SKILL.md`](.cursor/skills/orchestrator/SKILL.md)): он читает доску задач, создаёт execution’ы и координирует субагентов по FSM.
