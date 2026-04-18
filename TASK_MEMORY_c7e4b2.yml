@@ -1,0 +1,401 @@
+task_id: c7e4b2-dashboard-room-view
+current_execution_id: 6
+started_at: "2026-04-16T21:15:00.000Z"
+finished_at: "2026-04-16T23:40:00.000Z"
+
+executions:
+  - id: 1
+    parent_execution_id: null
+    agent_type: analysis
+    started_at: "2026-04-16T21:15:00.000Z"
+    finished_at: "2026-04-16T21:18:00.000Z"
+    output_data: |
+      ## Функциональные требования
+
+      - **Продуктовая метафора:** режим «Room» — игровое отображение работы агентов: одна общая «комната» (openspace), команда из шести ролей пайплайна как персонажи; они «работают вместе» в одном помещении у разных рабочих столов.
+      - **Персонажи:** шесть устойчивых ролей (`analysis`, `architect`, `development`, `code-review`, `testing`, `tech-writer`) — визуально **разные** маленькие **пикселизованные** человечки (не один спрайт на всех); узнаваемость роли по силуэту/палитре и подписи/тултипу при необходимости.
+      - **Зоны openspace:** крупная сцена с явным делением на **зону отдыха (лаунж)** — там персонажи ролей, которые **сейчас не выполняют** активную работу по правилам ниже; и **рабочую зону** со столами и компьютерами — куда «переходит» персонаж, когда его роль **получила задание и работает** в смысле данных дашборда.
+      - **Режимы UI:** переключатель **Live** (текущий функциональный вид: сводка, FSM, таймлайн, детали execution) и **Room** (игровая сцена). Переключение не ломает выбор задачи в селекторе.
+      - **Источник истины для позиций:** только **выбранная** в `TaskSelector` задача (`TaskRecord` для активного `taskId`). Другие задачи из списка на расстановку персонажей **не** влияют.
+      - **Правило «кто за компьютером»:** для выбранной задачи взять **текущий** execution через `getCurrentExecution` (приоритет `currentExecutionId`, иначе `isCurrent`, иначе последний в списке). Если у этого execution `status === 'in-progress'` — персонаж с его `agentType` показывается в **рабочей зоне** у стола/ПК; остальные пять ролей — в **лаунже**.
+      - **Правило «все в лаунже»:** если у текущего execution статус **не** `in-progress` (в т.ч. `new`, `done`, `fail`), **или** задача с точки зрения дашборда завершена (`phase === 'done'` и/или заполнен `finishedAt` — зафиксировать единое правило на этапе архитектуры), **или** нет выбранной/валидной задачи (пустой список, loading, error) — все шесть персонажей отображаются в лаунже; не показывать сцену от «старой» задачи при смене выбора или при ошибке загрузки.
+      - **Визуал сцены:** openspace читаемый как офис: пол/стены декоративно, столы и мониторы в рабочей зоне; лаунж — сиденья/диван/ковёр и т.п. на усмотрение реализации без тяжёлых растровых ассетов.
+      - **Ассеты v1:** без тяжёлых PNG; персонажи и декор — **SVG и/или CSS**; для пиксельного вида — целочисленный масштаб и **`image-rendering`** (`pixelated` / `crisp-edges` по поддержке браузеров).
+      - **Доступность:** поддержать **`prefers-reduced-motion`**: при `reduce` отключить или свести к минимуму idle/переходные анимации (статичная сцена допустима).
+
+      ## Нефункциональные требования
+
+      - Лёгкий клиент: приоритет DOM/SVG/CSS, без крупных бинарных ресурсов.
+      - Согласованность с моделью: использовать `AGENT_TYPES`, `Execution`, `TaskRecord`, `getCurrentExecution`, `ExecutionStatus` из существующего кода; не дублировать бизнес-логику парсера YAML на клиенте сверх уже приходящего JSON.
+      - Изменения в рамках фронтенда `dashboard/`; новые API контракты не требуются, если архитектор не решит иначе.
+      - Локализация подписей переключателя и зон — в стиле текущего UI (русский).
+
+      ## Открытые вопросы
+
+      - Единое правило «задача завершена» для «все в лаунже»: достаточно `task.phase === 'done'` или обязательно `finishedAt`, и как показывать промежуток «последний execution done, следующий ещё не создан оркестратором».
+      - Нужен ли в режиме Room дублирующий **TaskSelector** или достаточно общего селектора слева как сейчас; нужен ли полноэкранный Room без боковой колонки.
+      - Нужна ли **анимация** перемещения персонажа между лаунжем и столом при смене `in-progress`-роли или достаточно мгновенной смены позиции (при отсутствии reduced motion).
+
+      ## Контекст для архитектора
+
+      - Вход: `ai/dev-studio/dashboard/src/App.tsx` — добавить состояние вида (`live` | `room`) и ветвление контента `main` после выбора задачи; пустые/ошибочные состояния согласовать с Room (не рендерить устаревшую сцену).
+      - Вынести сцену в компонент, напр. `dashboard/src/components/RoomView.tsx` (или `AgentRoom.tsx`); стили — `App.css` или локальный CSS-модуль.
+      - Чистая функция от `(task: TaskRecord | null, ...)` → для каждого `AgentType` зона `lounge` | `desk` + опциональный бейдж статуса; ядро: `getCurrentExecution` + проверка `status === 'in-progress'`.
+      - Цвета ролей согласовать с существующими чипами в `App.css` (`.exec-agent-*`).
+      - Критерии приёмки: смена задачи в селекторе пересчитывает сцену; появление `in-progress` у текущего execution перемещает соответствующего персонажа в рабочую зону; иначе все в лаунже; reduced motion соблюдён.
+    status: done
+
+  - id: 2
+    parent_execution_id: 1
+    agent_type: architect
+    started_at: "2026-04-16T21:25:00.000Z"
+    finished_at: "2026-04-16T21:32:00.000Z"
+    output_data: |
+      ## Обзор решения
+
+      Режим **Room** — отдельная ветка контента в `main` после успешного выбора задачи: игровая openspace-сцена с шестью фиксированными ролями (`AGENT_TYPES`). Позиции персонажей полностью определяются **одной** чистой функцией от выбранной `TaskRecord | null` и флага «можно ли доверять сцене» (нет загрузки/ошибки/рассинхрона выбора). Источник истины для «кто за столом» — `getCurrentExecution(task)` + `execution.status === 'in-progress'`; иначе все в лаунже. Новых API и парсинга YAML на клиенте не вводим.
+
+      **Ключевые решения:** (1) единое правило «задача завершена» для лаунжа — см. ниже; (2) один общий `TaskSelector` слева, без дубля в Room; (3) анимация перемещения — лёгкая CSS-трансформация по умолчанию, отключаемая через `prefers-reduced-motion`; (4) при `isLoading` / `error` / отсутствии `selectedTask` ветка `RoomView` **не рендерится**, чтобы не показывать сцену от предыдущей задачи; чистая функция при этом может вызываться с `task: null` и `sceneAllowed: false` только из тестов или внутренних утилит.
+
+      ## Компоненты системы
+
+      | Компонент | Ответственность |
+      |-----------|-----------------|
+      | `App.tsx` | Состояние вида `dashboardView: 'live' \| 'room'`; переключатель (русские подписи); условный рендер `main`: при ошибке/загрузке/пустом списке — текущие empty-state; при валидной задаче — либо блок Live (как сейчас), либо `RoomView`. Прокидывает в Room только `task`, когда сцена валидна. |
+      | `RoomView` | Композиция сцены: фон openspace, зона лаунжа, зона столов/ПК; рендер шести слотов агентов по результату `computeAgentPlacements`; обёртка с классом для `prefers-reduced-motion`. |
+      | `AgentCharacter` (или 6 тонких подкомпонентов) | Один персонаж: SVG/CSS, уникальный силуэт/палитра на роль; подпись/тултип с `AGENT_LABELS[agentType]`; опционально мини-бейдж статуса текущего execution у персонажа за столом. |
+      | `computeAgentPlacements` | Чистая функция: вход → для каждого `AgentType` зона `lounge \| desk` + метаданные для UI (например `highlightStatus: ExecutionStatus \| null` только для агента за столом). |
+      | Стили | Классы зон и персонажей: расширение `App.css` **или** локальный `RoomView.css` импортируемый только из `RoomView` (на усмотрение разработчика; цвета ролей — согласовать с `.exec-agent-*` в `App.css`). |
+
+      ```mermaid
+      graph LR
+        App --> RoomView
+        App --> LivePanels[Live: Summary FSM Timeline Detail]
+        RoomView --> computeAgentPlacements
+        computeAgentPlacements --> types_ts["types.ts: TaskRecord Execution getCurrentExecution"]
+        RoomView --> AgentCharacter
+      ```
+
+      ## Структуры данных
+
+      Новые типы (файл `dashboard/src/room/placement.ts` или секция в `types.ts` — на выбор разработчика, предпочтительно отдельный модуль рядом с Room):
+
+      ```ts
+      export type RoomZone = 'lounge' | 'desk'
+
+      export interface AgentRoomPlacement {
+        agentType: AgentType
+        zone: RoomZone
+        /** Статус текущего execution, если этот агент за столом; иначе null */
+        activeExecutionStatus: ExecutionStatus | null
+      }
+
+      export type AgentPlacementsMap = Record<AgentType, AgentRoomPlacement>
+
+      /**
+       * @param task — выбранная задача; null = все в лаунже
+       * @param sceneAllowed — false при loading/error или когда родитель намеренно не показывает сцену
+       */
+      export function computeAgentPlacements(
+        task: TaskRecord | null,
+        sceneAllowed: boolean,
+      ): AgentPlacementsMap
+      ```
+
+      **Алгоритм `computeAgentPlacements`:**
+
+      1. Инициализировать все `AgentType` с `zone: 'lounge'`, `activeExecutionStatus: null`.
+      2. Если `!sceneAllowed` или `task === null` → вернуть карту (все лаунж).
+      3. Если задача **завершена для Room** (см. правило ниже) → вернуть карту (все лаунж).
+      4. `const current = getCurrentExecution(task)`.
+      5. Если `!current` или `current.status !== 'in-progress'` → вернуть карту (все лаунж).
+      6. Иначе: для `current.agentType` установить `zone: 'desk'`, `activeExecutionStatus: current.status`; остальные без изменений (лаунж).
+
+      **Единое правило «задача завершена» (закрывает открытый вопрос анализа):** считать задачу завершённой для Room, если **`task.phase === 'done'` ИЛИ `task.finishedAt !== null`**. В этом состоянии персонажи не «работают за ПК», даже если последний execution в списке ещё `done`, а следующий от оркестратора не создан: `getCurrentExecution` может указывать на `done`, что не `in-progress` → все в лаунже; плюс при `phase === 'done'` лаунж гарантирован явно.
+
+      ## API и интерфейсы
+
+      - HTTP/WebSocket контракты **без изменений**.
+      - Публичный UI-контракт `RoomView`:
+
+        ```tsx
+        export type RoomViewProps = {
+          task: TaskRecord
+          className?: string
+        }
+        ```
+
+        Родитель (`App`) обязан рендерить `RoomView` **только** когда уже есть валидная `selectedTask` и нет `isLoading`/`error` (как для Live). Таким образом «не показывать старую сцену» достигается тем, что при переходе в loading/error ветка Room не монтируется; при смене `taskId` проп `task` обновляется синхронно с мемоизированным `selectedTask`.
+
+      - Переключатель вида (пример пропсов): `value: 'live' | 'room'`, `onChange`, подписи на русском: «Сводка» / «Комната» или «Live» / «Room» — согласовать с тоном существующих заголовков (рекомендация: **«Сводка»** и **«Комната»**).
+
+      ## Технологический стек
+
+      - React 19 + TypeScript (как в проекте), без новых зависимостей для v1.
+      - Персонажи и декор: inline SVG и/или CSS-формы; пиксельный вид: целочисленный масштаб (`transform: scale(N)` с целым N) + `image-rendering: pixelated` и fallback `crisp-edges` где уместно.
+      - Доступность: `@media (prefers-reduced-motion: reduce)` — отключить transition/animation на перемещении и idle; допустима полностью статичная сцена.
+
+      ## Файловая структура
+
+      - `dashboard/src/App.tsx` — состояние вида, переключатель, ветвление `main`.
+      - `dashboard/src/components/RoomView.tsx` — сцена Room.
+      - `dashboard/src/components/room/AgentCharacter.tsx` (опционально папка `room/` для мелких SVG-слоёв по ролям).
+      - `dashboard/src/room/placement.ts` — `computeAgentPlacements`, типы `RoomZone`, `AgentRoomPlacement`, экспорт тестируемого ядра.
+      - `dashboard/src/room/placement.test.ts` — юнит-тесты чистой функции (если в проекте принят vitest/jest — следовать существующему раннеру).
+      - Стили: правки `dashboard/src/App.css` и/или `dashboard/src/components/RoomView.css`.
+
+      ## Открытые решения (с рекомендациями)
+
+      | Вопрос из анализа | Решение |
+      |-------------------|---------|
+      | Дублировать TaskSelector в Room? | **Нет** — достаточно левой колонки. |
+      | Полноэкранный Room без сайдбара? | **Не в v1** — сохраняем текущий `workspace` grid; Room занимает область `main-content`. При желании позже — отдельная итерация. |
+      | Анимация lounge ↔ desk? | **Да, лёгкая** (200–300ms opacity/transform), уважая `prefers-reduced-motion`; допустима **мгновенная** смена как минимально жизнеспособный вариант, если время поджимает. |
+
+      ## Критерии для разработчика (приёмка)
+
+      1. Переключатель Live/Room не сбрасывает выбранный `taskId` в селекторе.
+      2. Смена задачи в `TaskSelector` пересчитывает сцену; данные сцены всегда из **текущего** `selectedTask`, совпадающего с `resolvedTaskId`.
+      3. Для валидной незавершённой задачи: если `getCurrentExecution(task).status === 'in-progress'`, ровно один персонаж (с `agentType` текущего execution) в рабочей зоне; остальные пять в лаунже.
+      4. Во всех прочих случаях (нет задачи, loading, error, завершённая задача по правилу ИЛИ, текущий execution не `in-progress`) — все шесть в лаунже.
+      5. При `prefers-reduced-motion: reduce` нет заметных анимаций перемещения/idle.
+      6. Цвета/классы ролей визуально согласованы с `.exec-agent-*` (или переиспользуют те же токены CSS).
+      7. Не дублировать парсинг YAML; использовать только типы и `getCurrentExecution` из `types.ts`.
+
+      ## Следующий этап: development
+
+      Реализация по файловой структуре и контрактам выше; оркестратор создаёт execution `agent_type: development`.
+    status: done
+
+  - id: 3
+    parent_execution_id: 2
+    agent_type: development
+    started_at: "2026-04-16T22:40:00.000Z"
+    finished_at: "2026-04-16T22:52:00.000Z"
+    output_data: |
+      ## Реализованные файлы
+      - `ai/dev-studio/dashboard/src/room/placement.ts` — типы `RoomZone`, `AgentRoomPlacement`, `AgentPlacementsMap` и `computeAgentPlacements` по алгоритму из архитектуры (в т.ч. правило завершения задачи: `phase === 'done'` или `finishedAt !== null`).
+      - `ai/dev-studio/dashboard/src/components/RoomView.tsx` — сцена openspace: рабочая зона (столы/мониторы) и лаунж; шесть персонажей по результату `computeAgentPlacements`.
+      - `ai/dev-studio/dashboard/src/components/room/AgentCharacter.tsx` — пиксельные SVG-силуэты по роли, подпись/тултип, бейдж статуса у агента за столом.
+      - `ai/dev-studio/dashboard/src/App.tsx` — состояние `dashboardView`, переключатель «Сводка» / «Комната», ветвление контента; `RoomView` только при валидной задаче без loading/error (как и Live).
+      - `ai/dev-studio/dashboard/src/App.css` — стили переключателя, комнаты, зон, персонажей, `prefers-reduced-motion` для анимации появления.
+
+      ## Ключевые решения при реализации
+      - Юнит-тесты для `computeAgentPlacements` не добавлены: в `package.json` нет vitest/jest; проверка — `npm run check` (tsc).
+      - Отдельный `RoomView.css` не вводился: стили с префиксом `.room-` в `App.css`.
+
+      ## Как проверить вручную
+      1. `cd ai/dev-studio/dashboard && npm run dev` (или уже запущенный стек), открыть dashboard.
+      2. Выбрать задачу в левом списке; убедиться, что переключатель «Сводка» / «Комната» не сбрасывает выбор при переключении.
+      3. В режиме «Комната»: при текущем execution со статусом `in-progress` один персонаж (роль этого execution) в рабочей зоне с бейджем «В процессе»; остальные в лаунже.
+      4. Если задача завершена (`phase === 'done'` или есть `finishedAt`), или текущий execution не `in-progress`, или нет задачи / ошибка / загрузка — в комнате все шесть в лаунже; при загрузке/ошибке блок Room не показывается.
+      5. В системных настройках включить «уменьшить движение»: анимация появления персонажей в комнате отключается.
+    status: done
+
+  - id: 4
+    parent_execution_id: 3
+    agent_type: code-review
+    started_at: "2026-04-16T23:05:00.000Z"
+    finished_at: "2026-04-16T23:12:00.000Z"
+    output_data: |
+      ## Решение: Approve
+
+      ## Проверенные файлы
+      - `ai/dev-studio/dashboard/src/room/placement.ts` — ok: алгоритм совпадает с архитектурой (`getCurrentExecution`, завершение задачи `phase === 'done'` или `finishedAt !== null`, стол только при `status === 'in-progress'`).
+      - `ai/dev-studio/dashboard/src/components/RoomView.tsx` — ok: контракт `RoomViewProps`, шесть агентов по зонам, корневой класс `room-scene` для reduced-motion.
+      - `ai/dev-studio/dashboard/src/components/room/AgentCharacter.tsx` — ok: различимые SVG-паттерны по роли, подпись/`title`, бейдж у агента за столом.
+      - `ai/dev-studio/dashboard/src/App.tsx` — ok: `dashboardView`, переключатель «Сводка» / «Комната», `RoomView` только в ветке с валидной задачей без loading/error (устаревшая сцена не монтируется).
+      - `ai/dev-studio/dashboard/src/App.css` — ok: зоны комнаты, переключатель, `prefers-reduced-motion` для анимации агентов.
+
+      ## Замечания (некритичные, для сведения разработчика)
+      - В `App.css` есть дублирующиеся блоки стилей для переключателя вида и комнаты (ранний и поздний набор правил с разной специфичностью каскада); на поведение сейчас это не влияет, но усложняет сопровождение — имеет смысл позже свести к одному слою.
+      - Юнит-тесты `computeAgentPlacements` по-прежнему желательны при появлении vitest/jest в проекте (как в архитектуре); текущее ограничение `package.json` задокументировано в execution 3.
+
+      ## Следующий этап: testing
+      Код соответствует архитектуре и критериям приёмки; можно переходить к тестированию (ручной сценарий из execution 3 и при необходимости регресс Live-режима).
+    status: done
+
+  - id: 5
+    parent_execution_id: 4
+    agent_type: testing
+    started_at: "2026-04-16T23:18:00.000Z"
+    finished_at: "2026-04-16T23:22:00.000Z"
+    output_data: |
+      ## Результат: проверка типов и сценарии
+
+      Прогон `npm run check` (tsc -b) в `ai/dev-studio/dashboard`: **успех**, exit code 0.
+
+      Реализация `computeAgentPlacements`, `RoomView`, `AgentCharacter` и ветвления в `App.tsx` согласована с execution 1–4: правило завершения задачи (`phase === 'done'` или `finishedAt !== null`), стол только при `getCurrentExecution` + `status === 'in-progress'`, `RoomView` только при валидной задаче без loading/error.
+
+      ## Следующий этап: tech-writer
+
+      Критических расхождений с требованиями и архитектурой не выявлено; отдельные юнит-тесты на диске отсутствуют (как в execution 3) — ниже полный предлагаемый код для будущего vitest.
+
+      ## Ручные сценарии (приёмка)
+
+      1. **Переключатель и выбор задачи:** открыть дашборд с несколькими задачами; выбрать задачу A; переключить «Сводка» ↔ «Комната» несколько раз — `taskId` в селекторе не сбрасывается.
+      2. **Комната при активной работе:** для задачи, у которой текущий execution (по `current_execution_id` / `isCurrent` / последний) в статусе `in-progress`, открыть «Комната» — ровно один персонаж в рабочей зоне, роль совпадает с `agent_type` этого execution; у него бейдж «В процессе»; остальные пять в лаунже с подписями ролей.
+      3. **Все в лаунже:** для задачи с текущим execution в `new` / `done` / `fail`, или завершённой по правилу (`phase === 'done'` или непустой `finishedAt`) — в «Комната» все шесть в лаунже, никого за столом с бейджем.
+      4. **Нет устаревшей сцены:** симулировать состояние загрузки или ошибки (или пустой список) — основной контент не показывает `RoomView`; после восстановления данных комната соответствует выбранной задаче.
+      5. **Смена задачи:** переключить задачу B ↔ A в селекторе в режиме «Комната» — расстановка пересчитывается по новой выбранной записи.
+      6. **prefers-reduced-motion:** в системных настройках включить уменьшение анимации — у агентов не должно быть заметной анимации появления (класс `room-scene` / отключённые transition согласно `App.css`).
+
+      ## Предложенные юнит-тесты (только текст; файл не создавался)
+
+      **Путь (рекомендация):** `ai/dev-studio/dashboard/src/room/placement.test.ts` после добавления vitest в проект.
+
+      ```typescript
+      import { describe, it, expect } from 'vitest'
+      import { computeAgentPlacements } from './placement.ts'
+      import { AGENT_TYPES, type AgentType, type Execution, type TaskRecord } from '../types.ts'
+
+      function baseExecution(overrides: Partial<Execution> & Pick<Execution, 'id' | 'agentType' | 'status'>): Execution {
+        return {
+          parentExecutionId: null,
+          startedAt: null,
+          finishedAt: null,
+          outputData: '',
+          nextPhase: null,
+          isReturn: false,
+          isCurrent: false,
+          ...overrides,
+        }
+      }
+
+      function baseTask(overrides: Partial<TaskRecord>): TaskRecord {
+        return {
+          taskId: 'test-task',
+          memoryFileName: null,
+          memoryFilePath: null,
+          memoryTaskId: null,
+          phase: 'development',
+          currentExecutionId: null,
+          startedAt: null,
+          finishedAt: null,
+          description: '',
+          executions: [],
+          ...overrides,
+        }
+      }
+
+      function expectAllLounge(map: ReturnType<typeof computeAgentPlacements>) {
+        for (const t of AGENT_TYPES) {
+          expect(map[t].zone).toBe('lounge')
+          expect(map[t].activeExecutionStatus).toBeNull()
+        }
+      }
+
+      describe('computeAgentPlacements', () => {
+        it('sceneAllowed false returns all lounge even with in-progress current', () => {
+          const task = baseTask({
+            executions: [
+              baseExecution({ id: 1, agentType: 'testing', status: 'in-progress', isCurrent: true }),
+            ],
+            currentExecutionId: 1,
+          })
+          expectAllLounge(computeAgentPlacements(task, false))
+        })
+
+        it('task null returns all lounge', () => {
+          expectAllLounge(computeAgentPlacements(null, true))
+        })
+
+        it('phase done returns all lounge', () => {
+          const task = baseTask({
+            phase: 'done',
+            executions: [
+              baseExecution({ id: 1, agentType: 'development', status: 'in-progress', isCurrent: true }),
+            ],
+            currentExecutionId: 1,
+          })
+          expectAllLounge(computeAgentPlacements(task, true))
+        })
+
+        it('finishedAt set returns all lounge', () => {
+          const task = baseTask({
+            finishedAt: '2026-04-16T00:00:00.000Z',
+            executions: [
+              baseExecution({ id: 1, agentType: 'architect', status: 'in-progress', isCurrent: true }),
+            ],
+            currentExecutionId: 1,
+          })
+          expectAllLounge(computeAgentPlacements(task, true))
+        })
+
+        it('current execution not in-progress returns all lounge', () => {
+          const task = baseTask({
+            executions: [
+              baseExecution({ id: 2, agentType: 'development', status: 'done', isCurrent: true }),
+            ],
+            currentExecutionId: 2,
+          })
+          expectAllLounge(computeAgentPlacements(task, true))
+        })
+
+        it('current execution in-progress moves only that agent to desk', () => {
+          const task = baseTask({
+            executions: [
+              baseExecution({ id: 1, agentType: 'analysis', status: 'done' }),
+              baseExecution({ id: 2, agentType: 'architect', status: 'in-progress', isCurrent: true }),
+            ],
+            currentExecutionId: 2,
+          })
+          const map = computeAgentPlacements(task, true)
+          for (const t of AGENT_TYPES) {
+            if (t === 'architect') {
+              expect(map[t].zone).toBe('desk')
+              expect(map[t].activeExecutionStatus).toBe('in-progress')
+            } else {
+              expect(map[t].zone).toBe('lounge')
+              expect(map[t].activeExecutionStatus).toBeNull()
+            }
+          }
+        })
+
+        it('respects currentExecutionId over isCurrent and last item', () => {
+          const task = baseTask({
+            executions: [
+              baseExecution({ id: 1, agentType: 'analysis', status: 'done', isCurrent: false }),
+              baseExecution({ id: 2, agentType: 'testing', status: 'in-progress', isCurrent: false }),
+              baseExecution({ id: 3, agentType: 'tech-writer', status: 'new', isCurrent: true }),
+            ],
+            currentExecutionId: 2,
+          })
+          const map = computeAgentPlacements(task, true)
+          expect(map.testing.zone).toBe('desk')
+          expect(map['tech-writer'].zone).toBe('lounge')
+        })
+
+        it('every AgentType key is present', () => {
+          const map = computeAgentPlacements(null, true)
+          const keys = Object.keys(map) as AgentType[]
+          expect(keys.sort()).toEqual([...AGENT_TYPES].sort())
+        })
+      })
+      ```
+
+      ## Покрытие требований (кратко)
+
+      - Правило лаунжа при `!sceneAllowed` / `task === null` / завершённая задача / не `in-progress` — сценарии и тесты выше.
+      - Один агент за столом при `in-progress` — тест и ручной сценарий 2.
+        - Соответствие `getCurrentExecution` — тест `currentExecutionId`.
+    status: done
+
+  - id: 6
+    parent_execution_id: 5
+    agent_type: tech-writer
+    started_at: "2026-04-16T23:25:00.000Z"
+    finished_at: "2026-04-16T23:40:00.000Z"
+    output_data: |
+      ## Результат: Done
+
+      ## Созданные документы
+      - ai/dev-studio/docs/c7e4b2-dashboard-room-view/architecture.md — архитектура системы
+      - ai/dev-studio/docs/c7e4b2-dashboard-room-view/changelog.md — история изменений
+      - ai/dev-studio/docs/c7e4b2-dashboard-room-view/issues.md — реестр проблем
+
+      ## Источники
+      - Проанализировано executions: 6
+      - Git коммитов по файлам реализации execution 3: 0 (каталог `ai/dev-studio/dashboard/` не отслеживается git — untracked)
+      - Зафиксировано проблем (возвраты / упавшие тесты): 0
+    status: done
